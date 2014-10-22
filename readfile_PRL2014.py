@@ -30,7 +30,7 @@ home = expanduser("~"); print (home)
 # ---------------------------------
 # input data
 
-year = 2011
+#year = 2011
 #month = 03
 #year = int( sys.argv[ 1 ] )
 
@@ -38,8 +38,8 @@ year = 2011
 # name_yyyymm = "_%04d%02d" % ( year, month )
 # title_yyyymm = ". %04d%02d" % ( year, month )
 #dir_yyyymm ="%04d" % year
-name_yyyymm ="_%04d" % year
-title_yyyymm ="%04d" % year
+# name_yyyymm ="_%04d" % year
+# title_yyyymm ="%04d" % year
 
 reso="_15min"
 owner = "HYGEOS"
@@ -62,7 +62,7 @@ data = np.loadtxt( input_file )
 #  extract single yearly data from original data
 
 
-def findyear (data,year):
+def findyear (year):
 	n = np.shape(data)[0]
 	start = -1
 	end = -1
@@ -87,52 +87,117 @@ def findyear (data,year):
 ##-----------------------------------------------------------------------------------------
 ##--------------------frequent analysis---------------------
 
-def frequent_analysis(data):
+# def frequent_analysis(data):
 
-	date = data[ :, 0 ]
-	time = data[ :, 1 ]
-	nod = data[ :, i_nod ]   #  number of the day
-	dh = data[ :, i_dh ]    #   decimal hour
-	aot500 = data[ :, i_aot500 ]     #   
-	aot870 = data[ :, i_aot870 ]    #   aot at 870 nm
-	ae = data[ :, 6 ]     #   Angstrom exponent
-	visi = data[ :, 7 ]     #   visibility (m)
-	pec = data[ :, 8 ]    #  particle extinction coefficient (Mm-1)
-	pm25 = data[ :, i_pm25 ]   # microg/m3
+# 	date = data[ :, 0 ]
+# 	time = data[ :, 1 ]
+# 	nod = data[ :, i_nod ]   #  number of the day
+# 	dh = data[ :, i_dh ]    #   decimal hour
+# 	aot500 = data[ :, i_aot500 ]     #   
+# 	aot870 = data[ :, i_aot870 ]    #   aot at 870 nm
+# 	ae = data[ :, 6 ]     #   Angstrom exponent
+# 	visi = data[ :, 7 ]     #   visibility (m)
+# 	pec = data[ :, 8 ]    #  particle extinction coefficient (Mm-1)
+# 	pm25 = data[ :, i_pm25 ]   # microg/m3
 
 
-	ind_allDay = np.where( ( data[ :, i_dh ] > 0. ) ) [0]; nb_allDay = np.shape( ind_allDay ) [0]
-	ind_morn = np.where( ( data[ :, i_dh ] <= 12. ) ) [0]; nb_morn = np.shape( ind_morn ) [0]
-	ind_aft = np.where( ( data[ :, i_dh ] > 12. ) ) [0]; nb_aft = np.shape( ind_aft ) [0]
+# 	ind_allDay = np.where( ( data[ :, i_dh ] > 0. ) ) [0]; nb_allDay = np.shape( ind_allDay ) [0]
+# 	ind_morn = np.where( ( data[ :, i_dh ] <= 12. ) ) [0]; nb_morn = np.shape( ind_morn ) [0]
+# 	ind_aft = np.where( ( data[ :, i_dh ] > 12. ) ) [0]; nb_aft = np.shape( ind_aft ) [0]
 
-	#print aot500,pm25
+# 	#print aot500,pm25
 
-	aot500_mean = np.mean(aot500[aot500>0])
-	aot500_std = np.std(aot500[aot500>0])
-	pm25_mean = np.mean(pm25[pm25>0])
-	pm25_std = np.std(pm25[pm25>0])
+# 	aot500_mean = np.mean(aot500[aot500>0])
+# 	aot500_std = np.std(aot500[aot500>0])
+# 	pm25_mean = np.mean(pm25[pm25>0])
+# 	pm25_std = np.std(pm25[pm25>0])
 
-	return [aot500_mean,aot500_std,pm25_mean,pm25_std]
+# 	return [aot500_mean,aot500_std,pm25_mean,pm25_std]
 
-tmp = []
-for month in ["01","02","03","04","05","06","07","08","09","10","11","12"]:
-	year = "2013"+month
-	newdata = findyear(data,year)
-	#print frequent_analysis(newdata) 
-	tmp.append(frequent_analysis(newdata))
+# tmp = []
+# for month in ["01","02","03","04","05","06","07","08","09","10","11","12"]:
+# 	year = "2013"+month
+# 	newdata = findyear(data,year)
+# 	#print frequent_analysis(newdata) 
+# 	tmp.append(frequent_analysis(newdata))
 
-tmp = np.array(tmp,dtype = np.float32)
-print tmp
+# tmp = np.array(tmp,dtype = np.float32)
+# print tmp
 
-plt.figure(1)
-plt.plot(range(1,13),tmp[:,0], c='r', marker='*')
-plt.plot(range(1,13),tmp[:,0] - tmp[:,1], c='g', marker='>')
-plt.plot(range(1,13),tmp[:,0] + tmp[:,1], c='b', marker='<')
+# plt.figure(1)
+# plt.plot(range(1,13),tmp[:,0], c='r', marker='*')
+# plt.plot(range(1,13),tmp[:,0] - tmp[:,1], c='g', marker='>')
+# plt.plot(range(1,13),tmp[:,0] + tmp[:,1], c='b', marker='<')
 
-##plt.figure(2)
-#plt.scatter(range(1,13),tmp[:,2],'r',tmp[:,2] - tmp[:,3], tmp[:,2] + tmp[:,3],'b')
+# ##plt.figure(2)
+# #plt.scatter(range(1,13),tmp[:,2],'r',tmp[:,2] - tmp[:,3], tmp[:,2] + tmp[:,3],'b')
 
-plt.show()
+# plt.show()
+
+##----------------------------------------Daily Cycle------------
+##
+##----------------------------------------------------------------
+
+
+def DailyCycle(month):
+
+	def getData(year):
+		#year = "201003"
+		newdata = findyear(year)
+		days = np.shape(newdata)[0]/96
+		#dh = float(newdata[ :, i_dh ])    #   decimal hour
+		aot500 = np.array(newdata[ :, i_aot500 ],dtype = np.float)     #   
+		#aot870 = newdata[ :, i_aot870 ]    #   aot at 870 nm
+		pm25 = np.array(newdata[ :, i_pm25 ],dtype = np.float)   # microg/m3
+
+		y_axis_pm25 = np.zeros(96)
+		y_axis_aot500 = np.zeros(96)
+
+		for i in range(len(pm25)):
+			if pm25[i]> -0.1:
+				y_axis_pm25[i%96] += pm25[i]
+			if aot500[i]> -0.1:
+				y_axis_aot500[i%96] += aot500[i]
+
+		# print pm25
+		y_axis_pm25 /= days
+		y_axis_aot500 /= days
+
+		y_pm = np.zeros(24)
+		y_aot = np.zeros(24)
+		i = 0
+		j=0
+		while i<24:
+			y_pm[i] = np.mean(y_axis_pm25[j:j+4])
+			y_aot[i] = np.mean(y_axis_aot500[j:j+4])
+			i+=1
+			j+=4
+
+		return y_pm,y_aot
+
+	x_axis = np.arange(0.00,24.00,1.00)
+	plt.figure(1)
+	for year,c in zip(["%s" %("201"+str(i)+month) for i in range(0,5)],['b','r','g','y','m']):
+		y_pm, y_aot = getData(year)
+		plt.plot(x_axis,y_pm, c=c, marker='*',label = year)
+	
+	plt.ylabel("PM2.5")
+	plt.xlabel("time (24 hrs)")
+	plt.title(month)
+	plt.legend(loc='upper right', prop={'size':10})
+
+	plt.figure(2)
+	for year,c in zip(["%s" %("201"+str(i)+month) for i in range(0,5)],['b','r','g','y','m']):
+		y_pm, y_aot = getData(year)
+		plt.plot(x_axis,y_aot, c=c, marker='*', label = year)
+	
+	plt.ylabel("AOT")
+	plt.xlabel("time (24 hrs)")
+	plt.title(month)
+	plt.legend(loc='upper right', prop={'size':10})
+
+	plt.show()
+
 
 # figures
 
@@ -174,6 +239,10 @@ plt.show()
 # regimes = [ "morning", "afternoon", "allDay" ]
 # ind_regimes = [ ind_morn, ind_aft, ind_allDay ]
 # fct_plot_hist_regimes.plot( name_yyyymm, reso, output_dir_fig, output_name_1, plot_title_1, plot_title_2, title_yyyymm, x_title, owner, i_hist, range_min, range_max, nb_steps, regimes, ind_regimes, data )
+
+if __name__ == '__main__':
+	DailyCycle("03")
+
 
 
 	
